@@ -2,10 +2,10 @@ import org.gradle.api.tasks.compile.JavaCompile
 import org.jetbrains.kotlin.gradle.dsl.JvmTarget
 
 plugins {
-  kotlin("jvm") version "2.2.20"
-  kotlin("plugin.spring") version "2.2.20"
-  kotlin("plugin.jpa") version "2.2.20"
-  id("org.springframework.boot") version "4.0.0"
+  kotlin("jvm") version "2.4.20"
+  kotlin("plugin.spring") version "2.4.20"
+  kotlin("plugin.jpa") version "2.4.20"
+  id("org.springframework.boot") version "4.1.1"
   jacoco
 }
 
@@ -40,7 +40,7 @@ configurations.configureEach {
 }
 
 dependencies {
-  implementation(platform("org.springframework.boot:spring-boot-dependencies:4.0.0"))
+  implementation(platform("org.springframework.boot:spring-boot-dependencies:4.1.1"))
   // Boot 4 deprecates this starter in favour of spring-boot-starter-webmvc.
   implementation("org.springframework.boot:spring-boot-starter-web")
   implementation("org.springframework.boot:spring-boot-starter-validation")
