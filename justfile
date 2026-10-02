@@ -7,10 +7,13 @@ set windows-shell := ["powershell.exe", "-NoLogo", "-NoProfile", "-Command"]
 default:
     @just --list
 
-# Install the pinned tools and the package.
+# Install the pinned tools.
 install:
     mise install
-    mise run setup
+
+# Resolve and download the Gradle dependencies.
+deps:
+    gradle dependencies
 
 # Run every linter over the tracked files.
 lint:
@@ -24,13 +27,21 @@ lint-fix:
 aislop:
     npx --yes aislop@0.16.1 ci
 
-# Run the test suite. `mise run test` should hold the repository test command.
+# Run the test suite.
 test:
-    mise run test
+    gradle test
+
+# Run the tests with coverage and convert the JaCoCo report to lcov.
+coverage:
+    gradle test jacocoTestReport
+    node scripts/jacoco-to-lcov.mjs
+
+# Regenerate docs/openapi.json from the application.
+spec:
+    gradle generateOpenApi
 
 # Lint and test.
 verify: lint test
-
 
 # Prune remote-tracking refs and delete local branches merged into main.
 prune:

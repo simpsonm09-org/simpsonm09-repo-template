@@ -1,0 +1,27 @@
+<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<!DOCTYPE report PUBLIC "-//JACOCO//DTD Report 1.1//EN" "report.dtd">
+<report name="simpsonm09-repo-template">
+  <sessioninfo id="build-1" start="1700000000000" dump="1700000001000"/>
+  <package name="com/simpsonm09/template/service">
+    <class name="com/simpsonm09/template/service/ItemService" sourcefilename="ItemService.kt">
+      <method name="listItems" desc="()Ljava/util/List;" line="12">
+        <counter type="INSTRUCTION" missed="0" covered="4"/>
+      </method>
+    </class>
+    <sourcefile name="ItemService.kt">
+      <line nr="12" mi="0" ci="4" mb="0" cb="0"/>
+      <line nr="13" mi="0" ci="2" mb="0" cb="0"/>
+      <line nr="14" mi="3" ci="0" mb="1" cb="0"/>
+      <counter type="INSTRUCTION" missed="3" covered="6"/>
+      <counter type="LINE" missed="1" covered="2"/>
+    </sourcefile>
+    <counter type="INSTRUCTION" missed="3" covered="6"/>
+  </package>
+  <package name="com/simpsonm09/template/api">
+    <sourcefile name="ItemController.kt">
+      <line nr="20" mi="0" ci="1" mb="0" cb="0"/>
+      <line nr="21" mi="2" ci="0" mb="0" cb="0"/>
+    </sourcefile>
+  </package>
+  <counter type="INSTRUCTION" missed="5" covered="7"/>
+</report>
