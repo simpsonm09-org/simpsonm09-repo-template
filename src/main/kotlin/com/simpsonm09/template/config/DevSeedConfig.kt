@@ -11,16 +11,17 @@ import org.springframework.context.annotation.Profile
 @Configuration
 @Profile("dev")
 class DevSeedConfig {
-    @Bean
-    fun seedItems(repository: ItemJpaRepository): CommandLineRunner = CommandLineRunner {
-        if (repository.count() == 0L) {
-            repository.saveAll(
-                listOf(
-                    ItemEntity(name = "Widget", description = "A small widget"),
-                    ItemEntity(name = "Gadget", description = "A handy gadget"),
-                    ItemEntity(name = "Gizmo", description = "A clever gizmo"),
-                ),
-            )
-        }
+  @Bean
+  fun seedItems(repository: ItemJpaRepository): CommandLineRunner =
+    CommandLineRunner {
+      if (repository.count() == 0L) {
+        repository.saveAll(
+          listOf(
+            ItemEntity(name = "Widget", description = "A small widget"),
+            ItemEntity(name = "Gadget", description = "A handy gadget"),
+            ItemEntity(name = "Gizmo", description = "A clever gizmo"),
+          ),
+        )
+      }
     }
 }

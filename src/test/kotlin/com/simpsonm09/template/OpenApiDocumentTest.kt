@@ -17,19 +17,22 @@ import java.io.File
 @SpringBootTest
 @AutoConfigureMockMvc
 class OpenApiDocumentTest {
-    @Autowired
-    lateinit var mockMvc: MockMvc
+  @Autowired
+  lateinit var mockMvc: MockMvc
 
-    @Test
-    fun `writes the generated openapi document`() {
-        val json = mockMvc.perform(get("/v3/api-docs"))
-            .andExpect(status().isOk)
-            .andReturn().response.contentAsString
+  @Test
+  fun `writes the generated openapi document`() {
+    val json =
+      mockMvc
+        .perform(get("/v3/api-docs"))
+        .andExpect(status().isOk)
+        .andReturn()
+        .response.contentAsString
 
-        check(json.contains("\"openapi\"")) { "generated document has no openapi version" }
+    check(json.contains("\"openapi\"")) { "generated document has no openapi version" }
 
-        val target = File("docs/openapi.json")
-        target.parentFile.mkdirs()
-        target.writeText(json.trimEnd() + "\n")
-    }
+    val target = File("docs/openapi.json")
+    target.parentFile.mkdirs()
+    target.writeText(json.trimEnd() + "\n")
+  }
 }

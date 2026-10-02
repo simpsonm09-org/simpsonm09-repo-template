@@ -19,29 +19,36 @@ import org.springframework.web.bind.annotation.RestController
 @RequestMapping("/items")
 @Tag(name = "Items", description = "CRUD operations for items")
 class ItemController(
-    private val service: ItemService,
+  private val service: ItemService,
 ) {
-    @GetMapping
-    @Operation(summary = "List every item")
-    fun listItems(): List<ItemResponse> = service.listItems().map(ItemApiMapper::toResponse)
+  @GetMapping
+  @Operation(summary = "List every item")
+  fun listItems(): List<ItemResponse> = service.listItems().map(ItemApiMapper::toResponse)
 
-    @GetMapping("/{id}")
-    @Operation(summary = "Get one item by id")
-    fun getItem(@PathVariable id: Long): ItemResponse = ItemApiMapper.toResponse(service.getItem(id))
+  @GetMapping("/{id}")
+  @Operation(summary = "Get one item by id")
+  fun getItem(
+    @PathVariable id: Long,
+  ): ItemResponse = ItemApiMapper.toResponse(service.getItem(id))
 
-    @PostMapping
-    @ResponseStatus(HttpStatus.CREATED)
-    @Operation(summary = "Create an item")
-    fun createItem(@Valid @RequestBody request: ItemRequest): ItemResponse =
-        ItemApiMapper.toResponse(service.createItem(request.name, request.description))
+  @PostMapping
+  @ResponseStatus(HttpStatus.CREATED)
+  @Operation(summary = "Create an item")
+  fun createItem(
+    @Valid @RequestBody request: ItemRequest,
+  ): ItemResponse = ItemApiMapper.toResponse(service.createItem(request.name, request.description))
 
-    @PutMapping("/{id}")
-    @Operation(summary = "Replace an item")
-    fun updateItem(@PathVariable id: Long, @Valid @RequestBody request: ItemRequest): ItemResponse =
-        ItemApiMapper.toResponse(service.updateItem(id, request.name, request.description))
+  @PutMapping("/{id}")
+  @Operation(summary = "Replace an item")
+  fun updateItem(
+    @PathVariable id: Long,
+    @Valid @RequestBody request: ItemRequest,
+  ): ItemResponse = ItemApiMapper.toResponse(service.updateItem(id, request.name, request.description))
 
-    @DeleteMapping("/{id}")
-    @ResponseStatus(HttpStatus.NO_CONTENT)
-    @Operation(summary = "Delete an item")
-    fun deleteItem(@PathVariable id: Long) = service.deleteItem(id)
+  @DeleteMapping("/{id}")
+  @ResponseStatus(HttpStatus.NO_CONTENT)
+  @Operation(summary = "Delete an item")
+  fun deleteItem(
+    @PathVariable id: Long,
+  ) = service.deleteItem(id)
 }

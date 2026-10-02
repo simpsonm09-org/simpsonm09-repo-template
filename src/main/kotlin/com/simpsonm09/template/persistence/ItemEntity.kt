@@ -11,18 +11,17 @@ import jakarta.persistence.Table
 @Entity
 @Table(name = "items")
 class ItemEntity(
-    @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    var id: Long? = null,
-    @Column(nullable = false)
-    var name: String = "",
-    @Column
-    var description: String? = null,
+  @Id
+  @GeneratedValue(strategy = GenerationType.IDENTITY)
+  var id: Long? = null,
+  @Column(nullable = false)
+  var name: String = "",
+  @Column
+  var description: String? = null,
 ) {
-    fun toDomain(): Item = Item(id = id, name = name, description = description)
+  fun toDomain(): Item = Item(id = id, name = name, description = description)
 
-    companion object {
-        fun fromDomain(item: Item): ItemEntity =
-            ItemEntity(id = item.id, name = item.name, description = item.description)
-    }
+  companion object {
+    fun fromDomain(item: Item): ItemEntity = ItemEntity(id = item.id, name = item.name, description = item.description)
+  }
 }

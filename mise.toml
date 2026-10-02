@@ -5,6 +5,8 @@
 
 # Task runner
 "aqua:casey/just" = "1.58.0"
+"aqua:gradle/gradle" = "9.1.0"
+"aqua:pinterest/ktlint" = "1.5.0"
 
 # CI linters
 "aqua:rhysd/actionlint" = "1.7.12"
@@ -12,11 +14,9 @@
 
 # JVM toolchain
 java = "temurin-25"
-"aqua:gradle/gradle" = "9.1.0"
 
 # Linters
 "aqua:grafana/flint" = "0.22.14"
-"aqua:pinterest/ktlint" = "1.5.0"
 
 [env]
 FLINT_CONFIG_DIR = ".github/config"

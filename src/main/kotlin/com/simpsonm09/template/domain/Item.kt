@@ -5,7 +5,7 @@ package com.simpsonm09.template.domain
  * `id` is null until the item is persisted, at which point the store assigns it.
  */
 data class Item(
-    val id: Long? = null,
-    val name: String,
-    val description: String? = null,
+  val id: Long? = null,
+  val name: String,
+  val description: String? = null,
 )
