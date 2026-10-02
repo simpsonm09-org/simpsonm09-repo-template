@@ -1,3 +1,6 @@
 {
-  "readme": true
+  "readme": true,
+  "features": ["docs/features/items.md"],
+  "diagrams": ["docs/architecture.md"],
+  "api": { "style": "openapi", "spec": "docs/openapi.json" }
 }

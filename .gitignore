@@ -1,9 +1,15 @@
-__pycache__/
-*.py[cod]
-.venv/
-*.egg-info/
+# Gradle and JVM build output
+.gradle/
 build/
-dist/
+coverage/
+
+# IDE
+.idea/
+*.iml
+.vscode/
+
+# Python virtualenv left in place from the old Python template
+.venv/
 
 # Local scan output
 *.sarif
