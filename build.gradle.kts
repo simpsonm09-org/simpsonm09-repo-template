@@ -55,7 +55,7 @@ dependencies {
   testImplementation("org.springframework.boot:spring-boot-starter-webmvc-test")
   testImplementation("org.mockito:mockito-core")
   testImplementation("org.mockito.kotlin:mockito-kotlin:6.4.0")
-  testImplementation("io.rest-assured:rest-assured:5.5.0")
+  testImplementation("io.rest-assured:rest-assured:6.0.1")
   testRuntimeOnly("org.junit.platform:junit-platform-launcher")
 }
 
