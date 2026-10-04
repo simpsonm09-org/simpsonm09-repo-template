@@ -18,10 +18,23 @@ const DEFAULT_SOURCE_ROOT = 'src/main/kotlin';
 const PACKAGE_RE = /<package\b[^>]*\bname="([^"]*)"[^>]*>([\s\S]*?)<\/package>/g;
 const SOURCEFILE_RE = /<sourcefile\b[^>]*\bname="([^"]*)"[^>]*>([\s\S]*?)<\/sourcefile>/g;
 const LINE_RE = /<line\b([^>]*?)\/?>/g;
+const CLASS_RE = /<class\b([^>]*)>([\s\S]*?)<\/class>/g;
+const METHOD_RE = /<method\b([^>]*)>([\s\S]*?)<\/method>/g;
+const METHOD_COUNTER_RE = /<counter\b[^>]*\btype="METHOD"[^>]*\/>/;
 
 function attribute(attributes, name) {
   const match = new RegExp(`\\b${name}="([^"]*)"`).exec(attributes);
   return match ? match[1] : null;
+}
+
+// JaCoCo escapes method names in XML, so `<init>` arrives as `&lt;init&gt;`.
+function decodeEntities(value) {
+  return value
+    .replace(/&lt;/g, '<')
+    .replace(/&gt;/g, '>')
+    .replace(/&quot;/g, '"')
+    .replace(/&apos;/g, "'")
+    .replace(/&amp;/g, '&');
 }
 
 function linesOf(sourceBody) {
@@ -31,9 +44,32 @@ function linesOf(sourceBody) {
     const number = Number(attribute(attributes, 'nr'));
     const covered = Number(attribute(attributes, 'ci'));
     if (!Number.isFinite(number) || !Number.isFinite(covered)) continue;
-    lines.push({ number, hits: covered > 0 ? 1 : 0, covered });
+    const coveredBranches = Number(attribute(attributes, 'cb')) || 0;
+    const missedBranches = Number(attribute(attributes, 'mb')) || 0;
+    lines.push({ number, hits: covered > 0 ? 1 : 0, covered, coveredBranches, missedBranches });
   }
   return lines;
+}
+
+// JaCoCo puts methods on <class> elements that name their source file, so group
+// them by sourcefilename to attach FN/FNDA to the matching sourcefile record.
+function methodsOf(packageBody) {
+  const bySource = new Map();
+  for (const classMatch of packageBody.matchAll(CLASS_RE)) {
+    const sourceName = attribute(classMatch[1], 'sourcefilename');
+    if (!sourceName) continue;
+    const methods = bySource.get(sourceName) ?? [];
+    for (const methodMatch of classMatch[2].matchAll(METHOD_RE)) {
+      const name = attribute(methodMatch[1], 'name');
+      const line = Number(attribute(methodMatch[1], 'line'));
+      if (!name || !Number.isFinite(line)) continue;
+      const counter = METHOD_COUNTER_RE.exec(methodMatch[2]);
+      const hits = counter && Number(attribute(counter[0], 'covered')) > 0 ? 1 : 0;
+      methods.push({ name: decodeEntities(name), line, hits });
+    }
+    bySource.set(sourceName, methods);
+  }
+  return bySource;
 }
 
 /**
@@ -48,6 +84,7 @@ export function jacocoToLcov(xml, options = {}) {
 
   for (const packageMatch of xml.matchAll(PACKAGE_RE)) {
     const packageName = packageMatch[1].replace(/^\/|\/$/g, '');
+    const methodsBySource = methodsOf(packageMatch[2]);
     for (const sourceMatch of packageMatch[2].matchAll(SOURCEFILE_RE)) {
       const sourceName = sourceMatch[1];
       const lines = linesOf(sourceMatch[2]);
@@ -56,11 +93,29 @@ export function jacocoToLcov(xml, options = {}) {
       const prefix = packageName ? `${sourceRoot}/${packageName}` : sourceRoot;
       const path = `${prefix}/${sourceName}`;
       const covered = lines.filter((line) => line.hits > 0).length;
+      const methods = methodsBySource.get(sourceName) ?? [];
+      const branchesCovered = lines.reduce((sum, line) => sum + line.coveredBranches, 0);
+      const branchesTotal = lines.reduce(
+        (sum, line) => sum + line.coveredBranches + line.missedBranches,
+        0,
+      );
 
       const record = [`SF:${path}`];
+      for (const method of methods) record.push(`FN:${method.line},${method.name}`);
+      for (const method of methods) record.push(`FNDA:${method.hits},${method.name}`);
       for (const line of lines) record.push(`DA:${line.number},${line.hits}`);
+      for (const line of lines) {
+        const total = line.coveredBranches + line.missedBranches;
+        for (let branch = 0; branch < total; branch += 1) {
+          record.push(`BRDA:${line.number},0,${branch},${branch < line.coveredBranches ? 1 : 0}`);
+        }
+      }
       record.push(`LF:${lines.length}`);
       record.push(`LH:${covered}`);
+      record.push(`BRF:${branchesTotal}`);
+      record.push(`BRH:${branchesCovered}`);
+      record.push(`FNF:${methods.length}`);
+      record.push(`FNH:${methods.filter((method) => method.hits > 0).length}`);
       record.push('end_of_record');
       records.push(record.join('\n'));
     }
