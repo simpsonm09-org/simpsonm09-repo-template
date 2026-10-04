@@ -1,0 +1,20 @@
+# Detekt complexity gate over src/main/kotlin. Thresholds are Detekt's defaults,
+# pinned here so a later release cannot raise them silently. The task brief calls
+# the cyclomatic rule `ComplexMethod`; Detekt renamed it to `CyclomaticComplexMethod`.
+build:
+  maxIssues: 0
+
+config:
+  validation: true
+  warningsAsErrors: false
+
+complexity:
+  CyclomaticComplexMethod:
+    active: true
+    threshold: 15
+  LongMethod:
+    active: true
+    threshold: 60
+  NestedBlockDepth:
+    active: true
+    threshold: 4

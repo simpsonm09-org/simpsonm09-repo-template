@@ -23,6 +23,10 @@ lint:
 lint-fix:
     mise exec -- flint run --fix
 
+# Run the Detekt complexity gate over the main Kotlin sources.
+complexity:
+    mise exec -- detekt --config detekt.yml --input src/main/kotlin
+
 # Run the AI-slop gate.
 aislop:
     npx --yes aislop@0.16.1 ci
@@ -40,8 +44,8 @@ coverage:
 spec:
     gradle generateOpenApi
 
-# Lint and test.
-verify: lint test
+# Lint, check complexity, and test.
+verify: lint complexity test
 
 # Prune remote-tracking refs and delete local branches merged into main.
 prune:
