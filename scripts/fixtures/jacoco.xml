@@ -6,10 +6,15 @@
     <class name="com/simpsonm09/template/service/ItemService" sourcefilename="ItemService.kt">
       <method name="listItems" desc="()Ljava/util/List;" line="12">
         <counter type="INSTRUCTION" missed="0" covered="4"/>
+        <counter type="METHOD" missed="0" covered="1"/>
+      </method>
+      <method name="&lt;init&gt;" desc="(J)Lcom/simpsonm09/template/domain/Item;" line="14">
+        <counter type="INSTRUCTION" missed="3" covered="0"/>
+        <counter type="METHOD" missed="1" covered="0"/>
       </method>
     </class>
     <sourcefile name="ItemService.kt">
-      <line nr="12" mi="0" ci="4" mb="0" cb="0"/>
+      <line nr="12" mi="0" ci="4" mb="0" cb="2"/>
       <line nr="13" mi="0" ci="2" mb="0" cb="0"/>
       <line nr="14" mi="3" ci="0" mb="1" cb="0"/>
       <counter type="INSTRUCTION" missed="3" covered="6"/>
@@ -18,6 +23,12 @@
     <counter type="INSTRUCTION" missed="3" covered="6"/>
   </package>
   <package name="com/simpsonm09/template/api">
+    <class name="com/simpsonm09/template/api/ItemController" sourcefilename="ItemController.kt">
+      <method name="getItem" desc="(J)Lcom/simpsonm09/template/api/ItemResponse;" line="20">
+        <counter type="INSTRUCTION" missed="0" covered="1"/>
+        <counter type="METHOD" missed="0" covered="1"/>
+      </method>
+    </class>
     <sourcefile name="ItemController.kt">
       <line nr="20" mi="0" ci="1" mb="0" cb="0"/>
       <line nr="21" mi="2" ci="0" mb="0" cb="0"/>

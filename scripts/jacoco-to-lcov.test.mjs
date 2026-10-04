@@ -53,3 +53,34 @@ test('honours a custom source root', () => {
 test('returns an empty string when the report has no source lines', () => {
   assert.equal(jacocoToLcov('<report name="empty"></report>'), '');
 });
+
+test('emits BRDA records from per-line branch counters', () => {
+  const record = recordFor(jacocoToLcov(FIXTURE), 'src/main/kotlin/com/simpsonm09/template/service/ItemService.kt');
+
+  assert.match(record, /^BRDA:12,0,0,1$/m);
+  assert.match(record, /^BRDA:12,0,1,1$/m);
+  assert.match(record, /^BRDA:14,0,0,0$/m);
+  assert.match(record, /^BRF:3$/m);
+  assert.match(record, /^BRH:2$/m);
+});
+
+test('emits FN and FNDA records from method counters', () => {
+  const lcov = jacocoToLcov(FIXTURE);
+  const service = recordFor(lcov, 'src/main/kotlin/com/simpsonm09/template/service/ItemService.kt');
+  const controller = recordFor(lcov, 'src/main/kotlin/com/simpsonm09/template/api/ItemController.kt');
+
+  assert.match(service, /^FN:12,listItems$/m);
+  assert.match(service, /^FN:14,<init>$/m);
+  assert.match(service, /^FNDA:1,listItems$/m);
+  assert.match(service, /^FNDA:0,<init>$/m);
+  assert.match(service, /^FNF:2$/m);
+  assert.match(service, /^FNH:1$/m);
+  assert.match(controller, /^FN:20,getItem$/m);
+  assert.match(controller, /^FNDA:1,getItem$/m);
+});
+
+test('a file with no branch data emits no BRDA records', () => {
+  const controller = recordFor(jacocoToLcov(FIXTURE), 'src/main/kotlin/com/simpsonm09/template/api/ItemController.kt');
+
+  assert.doesNotMatch(controller, /^BRDA:/m);
+});
