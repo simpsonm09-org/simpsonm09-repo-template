@@ -20,3 +20,11 @@ trivy.sarif
 .aislop/history.jsonl
 .aislop/agent/
 .DS_Store
+
+# Local environment (see .env.example; a real .env is never committed)
+.env
+.env.*
+!.env.example
+.envrc
+.envrc.*
+!.envrc.example
