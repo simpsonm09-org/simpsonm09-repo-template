@@ -24,8 +24,9 @@ for one command.
 ## Validation
 
 Run `just lint`, `just complexity`, `just test`, and `just coverage`. `just verify`
-runs lint, complexity, and tests. The test and coverage recipes call `gradle` by name,
-so run them with the pinned tools on PATH, for example `mise exec -- just test`.
+runs lint, complexity, and tests. The recipes run the pinned tools through
+`mise exec --`, so `just test` needs no extra prefix once `mise install` has run.
+`coverage` also runs `node`, which `mise.toml` does not pin. It uses the Node on PATH.
 
 Coverage writes `coverage/lcov.info`. The shared CI workflow runs the pinned
 standard's patch gate at 80 percent of changed lines and 70 percent of changed

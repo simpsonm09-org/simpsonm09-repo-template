@@ -29,7 +29,7 @@ just complexity # check Kotlin complexity with Detekt
 just verify     # lint, complexity, and test
 ```
 
-The `test`, `coverage`, `spec`, and `deps` recipes call `gradle` by name. Run them with the pinned tools on PATH, for example `mise exec -- just test`. The `coverage` recipe also calls `node`, which `mise.toml` does not pin.
+The recipes run the pinned tools through `mise exec --`, so run `just install` once and then `just test` as shown. The `coverage` recipe also runs `node`. `mise.toml` does not pin Node, so `coverage` uses the Node on PATH.
 
 ## Layout
 
