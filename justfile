@@ -13,7 +13,7 @@ install:
 
 # Resolve and download the Gradle dependencies.
 deps:
-    gradle dependencies
+    mise exec -- gradle dependencies
 
 # Run every linter over the tracked files.
 lint:
@@ -33,20 +33,20 @@ aislop:
 
 # Run the test suite.
 test:
-    gradle test
+    mise exec -- gradle test
 
 # Run the tests with coverage and convert the JaCoCo report to lcov.
 coverage:
-    gradle test jacocoTestReport
-    node scripts/jacoco-to-lcov.mjs
+    mise exec -- gradle test jacocoTestReport
+    mise exec -- node scripts/jacoco-to-lcov.mjs
 
 # Regenerate docs/openapi.json from the application.
 spec:
-    gradle generateOpenApi
+    mise exec -- gradle generateOpenApi
 
 # Lint, check complexity, and test.
 verify: lint complexity test
 
 # Prune remote-tracking refs and delete local branches merged into main.
 prune:
-    node scripts/prune.mjs
+    mise exec -- node scripts/prune.mjs
