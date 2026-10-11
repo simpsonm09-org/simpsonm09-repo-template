@@ -11,8 +11,8 @@ generated OpenAPI document.
 - A layered package under `src/main/kotlin`: `api`, `service`, `domain`, `persistence`, `config`, and `exception`.
 - Spring Web MVC, bean validation, Spring Data JPA over H2, and Actuator, with springdoc generating the OpenAPI document from the code.
 - Unit tests for the service and the controller, an integration test over the real endpoints, and a test that writes `docs/openapi.json`.
-- JaCoCo coverage converted to lcov by `scripts/jacoco-to-lcov.mjs` and gated by `scripts/patch-coverage.mjs`.
-- A CI caller that runs the shared lint, aislop, security, and standard jobs plus this repository's `test` job.
+- JaCoCo coverage converted to lcov by `scripts/jacoco-to-lcov.mjs`. The shared CI coverage workflow runs the pinned standard's patch gate: 80 percent of changed lines and 70 percent of changed branches.
+- A CI caller that runs the shared lint, aislop, security, standard, and coverage jobs plus this repository's `test` job.
 - A `justfile` task runner with `just` and `gradle` pinned in `mise.toml`.
 - A multi-stage `Dockerfile` and a `compose.yaml` for local runs.
 
@@ -25,8 +25,11 @@ just test       # run the JVM test suite
 just coverage   # run the tests and write coverage/lcov.info
 just spec       # regenerate docs/openapi.json from the code
 just lint       # run flint
-just verify     # lint and test
+just complexity # check Kotlin complexity with Detekt
+just verify     # lint, complexity, and test
 ```
+
+The `test`, `coverage`, `spec`, and `deps` recipes call `gradle` by name. Run them with the pinned tools on PATH, for example `mise exec -- just test`. The `coverage` recipe also calls `node`, which `mise.toml` does not pin.
 
 ## Layout
 
@@ -34,7 +37,8 @@ just verify     # lint and test
 - `src/test/kotlin/com/simpsonm09/template/` holds the unit, integration, and document tests.
 - `docs/` holds the documentation tree; [docs/README.md](docs/README.md) is the index.
 - `justfile` is the one local entry point for a human or an agent.
-- `scripts/` holds the coverage converter and the shared patch-coverage and prune scripts.
+- `scripts/` holds the coverage converter and the shared prune script. The shared coverage workflow checks out the pinned standard for its patch-coverage script.
+- `.env.example` describes the optional local file; root `.worktreeinclude` lists `.env` for worktree copying. See [Repository setup](docs/features/repository-setup.md).
 - `.github/workflows/ci.yml` is the caller for the shared workflows plus the test job.
 
 ## License

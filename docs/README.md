@@ -9,6 +9,7 @@ Index for the `simpsonm09-repo-template` service, a layered Kotlin and Spring Bo
 ## Features
 
 - [Items](features/items.md) documents the item CRUD endpoints, the data shape, and the failure modes.
+- [Repository setup](features/repository-setup.md) explains standard adoption, local settings, and validation.
 
 ## API
 
