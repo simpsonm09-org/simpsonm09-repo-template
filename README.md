@@ -41,6 +41,10 @@ The recipes run the pinned tools through `mise exec --`, so run `just install` o
 - `.env.example` describes the optional local file; root `.worktreeinclude` lists `.env` for worktree copying. See [Repository setup](docs/features/repository-setup.md).
 - `.github/workflows/ci.yml` is the caller for the shared workflows plus the test job.
 
+## Starting a repository from this template
+
+The decisions a new repository owner makes on day one are in [Repository setup](docs/features/repository-setup.md#decide-on-day-one).
+
 ## License
 
 MIT. See [`LICENSE`](LICENSE).
