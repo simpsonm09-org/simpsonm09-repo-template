@@ -2,9 +2,9 @@ import org.gradle.api.tasks.compile.JavaCompile
 import org.jetbrains.kotlin.gradle.dsl.JvmTarget
 
 plugins {
-  kotlin("jvm") version "2.4.20"
-  kotlin("plugin.spring") version "2.4.20"
-  kotlin("plugin.jpa") version "2.4.20"
+  kotlin("jvm") version "2.4.21"
+  kotlin("plugin.spring") version "2.4.21"
+  kotlin("plugin.jpa") version "2.4.21"
   id("org.springframework.boot") version "4.1.1"
   jacoco
 }
@@ -55,7 +55,7 @@ dependencies {
   testImplementation("org.springframework.boot:spring-boot-starter-webmvc-test")
   testImplementation("org.mockito:mockito-core")
   testImplementation("org.mockito.kotlin:mockito-kotlin:6.4.0")
-  testImplementation("io.rest-assured:rest-assured:6.0.1")
+  testImplementation("io.rest-assured:rest-assured:6.1.0")
   testRuntimeOnly("org.junit.platform:junit-platform-launcher")
 }
 
