@@ -1,0 +1,106 @@
+name: dependabot-summary
+
+# Reviewer aid only, one repository. No checkout, no repository write, no
+# secret, no approval. It is not a required status check. See
+# docs/features/dependabot-summary.md. Rollback: delete this file.
+
+on:
+  pull_request:
+
+permissions: {}
+
+concurrency:
+  group: dependabot-summary-${{ github.event.pull_request.number }}
+  cancel-in-progress: true
+
+jobs:
+  summary:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 5
+    permissions:
+      pull-requests: read
+    env:
+      # The pull request author must be Dependabot, in this exact repository.
+      # The event sender is deliberately not checked: a maintainer who reopens
+      # or edits a bot pull request is a new webhook event whose sender is the
+      # maintainer, and the pull request is still a Dependabot pull request.
+      # The job still runs for every other pull request so it reports success
+      # instead of skipping.
+      IS_DEPENDABOT: >-
+        ${{ github.repository == 'simpsonm09-org/simpsonm09-repo-template' &&
+        github.event.pull_request.user.login == 'dependabot[bot]' }}
+    steps:
+      - name: Note a pull request without Dependabot metadata
+        if: env.IS_DEPENDABOT != 'true'
+        run: echo "This pull request is not a Dependabot pull request in the pilot repository. No summary was produced."
+
+      - name: Fetch Dependabot metadata
+        id: metadata
+        if: env.IS_DEPENDABOT == 'true'
+        uses: dependabot/fetch-metadata@25dd0e34f4fe68f24cc83900b1fe3fe149efef98 # v3.1.0
+        with:
+          github-token: ${{ github.token }}
+
+      - name: Render the reviewer summary
+        if: env.IS_DEPENDABOT == 'true'
+        env:
+          DEPENDENCY_NAMES: ${{ steps.metadata.outputs.dependency-names }}
+          DEPENDENCY_TYPE: ${{ steps.metadata.outputs.dependency-type }}
+          UPDATE_TYPE: ${{ steps.metadata.outputs.update-type }}
+        run: |
+          node <<'NODE'
+          // dependabot-summary renderer: begin
+          'use strict';
+
+          const { appendFileSync } = require('node:fs');
+
+          const LIMITS = { names: 300, dependencyType: 60, updateType: 60 };
+          const NOT_REPORTED = 'not reported';
+
+          const HTML = { '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' };
+          const MARKDOWN = new Set(['\\', '`', '*', '_', '{', '}', '[', ']', '(', ')', '#', '+', '-', '!', '|', '~']);
+
+          // Escape each character once, so a generated entity is never escaped
+          // again and the output is inert HTML and Markdown text.
+          function escapeText(text) {
+            return [...text]
+              .map((character) => HTML[character] ?? (MARKDOWN.has(character) ? `\\${character}` : character))
+              .join('');
+          }
+
+          // Render one untrusted value as inert text: drop control characters
+          // and bidi overrides, collapse line breaks, truncate, then escape.
+          function escape(value, limit) {
+            const text = String(value ?? '')
+              .replace(/[\u0000-\u0008\u000b\u000c\u000e-\u001f\u007f-\u009f]/g, ' ')
+              .replace(/[\u061c\u200b-\u200f\u202a-\u202e\u2066-\u2069\ufeff]/g, '')
+              .replace(/[\r\n\u2028\u2029]+/g, ' ')
+              .replace(/\s+/g, ' ')
+              .trim();
+            if (text === '') {
+              return NOT_REPORTED;
+            }
+            const characters = [...text];
+            const clipped = characters.length > limit ? `${characters.slice(0, limit).join('').trimEnd()}... truncated` : text;
+            return escapeText(clipped);
+          }
+
+          const summaryPath = process.env.GITHUB_STEP_SUMMARY;
+          if (!summaryPath) {
+            process.stderr.write('GITHUB_STEP_SUMMARY is not set; refusing to render a detached summary.\n');
+            process.exit(1);
+          }
+
+          const lines = [
+            '### Dependabot update summary',
+            '',
+            `- Dependencies: ${escape(process.env.DEPENDENCY_NAMES, LIMITS.names)}`,
+            `- Dependency type: ${escape(process.env.DEPENDENCY_TYPE, LIMITS.dependencyType)}`,
+            `- Update type: ${escape(process.env.UPDATE_TYPE, LIMITS.updateType)}`,
+            '',
+            'Metadata only. This job cannot approve, label, merge, or change the merge gate. Missing values are not evidence of safety, and none of this is a trust or review decision.',
+            '',
+          ];
+          appendFileSync(summaryPath, `${lines.join('\n')}\n`, 'utf8');
+          // dependabot-summary renderer: end
+          NODE
