@@ -35,6 +35,10 @@ aislop:
 test:
     mise exec -- gradle test
 
+# Run the offline tests for the Dependabot summary workflow.
+test-workflow:
+    mise exec -- node --test scripts/dependabot-summary.test.mjs
+
 # Run the tests with coverage and convert the JaCoCo report to lcov.
 coverage:
     mise exec -- gradle test jacocoTestReport
@@ -44,8 +48,8 @@ coverage:
 spec:
     mise exec -- gradle generateOpenApi
 
-# Lint, check complexity, and test.
-verify: lint complexity test
+# Lint, check complexity, test, and test the workflow.
+verify: lint complexity test test-workflow
 
 # Prune remote-tracking refs and delete local branches merged into main.
 prune:
