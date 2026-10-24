@@ -15,7 +15,7 @@ repositories.
 
 ## Repo facts
 
-- Language and toolchain: Kotlin 2.2, Java 25 (Temurin), Spring Boot 4.0, Gradle with the Kotlin DSL, pinned in `mise.toml`.
+- Language and toolchain: Kotlin version is set in `build.gradle.kts`; Java and Gradle versions are pinned in `mise.toml`. Spring Boot uses Gradle with the Kotlin DSL.
 - Data: H2 in memory, `spring.jpa.hibernate.ddl-auto=update`, entity `persistence.ItemEntity` in the `items` table. The `dev` profile seeds three items.
 - Domain: item CRUD. Reads and deletes of an unknown id raise `ItemNotFoundException`, which `GlobalExceptionHandler` maps to a 404 problem detail.
 - Coverage: JaCoCo writes `build/reports/jacoco/test/jacocoTestReport.xml`; `scripts/jacoco-to-lcov.mjs` converts it to lcov for the patch gate.
