@@ -70,6 +70,18 @@ function readContext(context, path) {
     .reduce((value, key) => (value === undefined || value === null ? undefined : value[key]), context);
 }
 
+// One `&&` conjunct may offer several equalities joined by `||` while the
+// organization rename is in flight: the pilot repository answers to either
+// owner spelling. The conjunct holds when any alternative matches the fixture.
+function matchesConjunct(context, conjunct) {
+  const alternatives = conjunct.replace(/^\((.*)\)$/, '$1').split('||').map((value) => value.trim());
+  return alternatives.some((alternative) => {
+    const equality = alternative.match(/^(github\.[\w.]+) == '([^']*)'$/);
+    assert.ok(equality, `unexpected predicate condition: ${alternative}`);
+    return readContext(context, equality[1]) === equality[2];
+  });
+}
+
 test('executes the inline renderer that the workflow uses', () => {
   assert.match(RENDERER, /^'use strict';/);
   assert.match(RENDERER, /GITHUB_STEP_SUMMARY/);
@@ -179,10 +191,34 @@ test('summarizes a maintainer-reopened Dependabot pull request', () => {
   const conditions = declaredBotConditions();
   assert.equal(conditions.length, 2, `unexpected condition count: ${conditions.join(' && ')}`);
   for (const condition of conditions) {
-    const equality = condition.match(/^(github\.[\w.]+) == '([^']*)'$/);
-    assert.ok(equality, `unexpected predicate condition: ${condition}`);
-    assert.equal(readContext(github, equality[1]), equality[2], condition);
+    assert.ok(matchesConjunct(github, condition), condition);
   }
+});
+
+test('recognizes the pilot repository under either owner spelling', () => {
+  // The organization rename is applied out of band, so the workflow must keep
+  // summarizing pull requests before and after the owner changes. Evaluate the
+  // declared predicate against both repository names.
+  const conditions = declaredBotConditions();
+
+  for (const owner of ['simpsonm09-org', 'simpsonm09-projects']) {
+    const github = {
+      repository: `${owner}/simpsonm09-repo-template`,
+      event: { pull_request: { user: { login: 'dependabot[bot]' } } },
+    };
+    for (const condition of conditions) {
+      assert.ok(matchesConjunct(github, condition), `${owner}: ${condition}`);
+    }
+  }
+
+  const unrelated = {
+    repository: 'someone-else/simpsonm09-repo-template',
+    event: { pull_request: { user: { login: 'dependabot[bot]' } } },
+  };
+  assert.ok(
+    conditions.some((condition) => !matchesConjunct(unrelated, condition)),
+    'the predicate must still reject another owner',
+  );
 });
 
 test('workflow keeps the read-only, checkout-free contract', () => {
@@ -198,7 +234,9 @@ test('workflow keeps the read-only, checkout-free contract', () => {
   assert.deepEqual(uses, ['dependabot/fetch-metadata@25dd0e34f4fe68f24cc83900b1fe3fe149efef98']);
   // The action treats any non-empty value, including "false", as enabled.
   assert.doesNotMatch(WORKFLOW, /^ {10}(alert-lookup|compat-lookup):/m);
-  assert.match(WORKFLOW, /github\.repository == 'simpsonm09-org\/simpsonm09-repo-template'/);
+  for (const owner of ['simpsonm09-org', 'simpsonm09-projects']) {
+    assert.match(WORKFLOW, new RegExp(`github\\.repository == '${owner}/simpsonm09-repo-template'`));
+  }
   assert.match(WORKFLOW, /github\.event\.pull_request\.user\.login == 'dependabot\[bot\]'/);
   // Coverage is by pull request author, not by webhook sender: a maintainer
   // reopening a bot pull request must still get a summary.

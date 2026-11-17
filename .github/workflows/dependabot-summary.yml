@@ -27,8 +27,9 @@ jobs:
       # The job still runs for every other pull request so it reports success
       # instead of skipping.
       IS_DEPENDABOT: >-
-        ${{ github.repository == 'simpsonm09-org/simpsonm09-repo-template' &&
-        github.event.pull_request.user.login == 'dependabot[bot]' }}
+        ${{ (github.repository == 'simpsonm09-org/simpsonm09-repo-template'
+        || github.repository == 'simpsonm09-projects/simpsonm09-repo-template')
+        && github.event.pull_request.user.login == 'dependabot[bot]' }}
     steps:
       - name: Note a pull request without Dependabot metadata
         if: env.IS_DEPENDABOT != 'true'
