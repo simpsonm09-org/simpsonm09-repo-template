@@ -16,7 +16,7 @@ do not show.
 
 The job summarizes only when both conditions hold:
 
-- `github.repository` is exactly `simpsonm09-org/simpsonm09-repo-template`.
+- `github.repository` is exactly `simpsonm09-projects/simpsonm09-repo-template`, or its pre-rename `simpsonm09-org` spelling.
 - The pull request author is `dependabot[bot]`.
 
 The event sender is not checked. A maintainer who reopens or edits a bot pull request creates a
