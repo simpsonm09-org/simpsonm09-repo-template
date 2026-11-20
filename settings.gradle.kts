@@ -1,1 +1,1 @@
-rootProject.name = "simpsonm09-repo-template"
+rootProject.name = "repo-template"

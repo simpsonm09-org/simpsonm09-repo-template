@@ -1,6 +1,6 @@
 # Documentation
 
-Index for the `simpsonm09-repo-template` service, a layered Kotlin and Spring Boot item CRUD API.
+Index for the `repo-template` service, a layered Kotlin and Spring Boot item CRUD API.
 
 ## Guides
 
