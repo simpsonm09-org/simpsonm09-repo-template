@@ -1,5 +1,5 @@
 # Tools for the template. `flint init` reconciles the linter pins under the
-# Linters header. See https://github.com/simpsonm09-projects/simpsonm09-repo-standard/blob/main/docs/linting.md
+# Linters header. See https://github.com/simpsonm09-projects/repo-standard/blob/main/docs/linting.md
 
 [tools]
 
