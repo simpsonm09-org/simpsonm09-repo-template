@@ -1,4 +1,4 @@
-# simpsonm09-repo-template working agreements
+# repo-template working agreements
 
 A layered Kotlin and Spring Boot item CRUD service, and a starting point for the fleet's JVM
 repositories.

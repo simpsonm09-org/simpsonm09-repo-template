@@ -42,7 +42,8 @@ function bullet(output, label) {
   return line;
 }
 
-const PILOT_REPOSITORY = 'simpsonm09-org/simpsonm09-repo-template';
+const PILOT_REPOSITORY = 'simpsonm09-projects/repo-template';
+const PILOT_REPOSITORIES = ['simpsonm09-org/simpsonm09-repo-template', PILOT_REPOSITORY];
 
 // Read the bot conditions from the workflow exactly as written. The tests
 // evaluate this text rather than a second copy of the predicate, so they
@@ -195,24 +196,24 @@ test('summarizes a maintainer-reopened Dependabot pull request', () => {
   }
 });
 
-test('recognizes the pilot repository under either owner spelling', () => {
-  // The organization rename is applied out of band, so the workflow must keep
-  // summarizing pull requests before and after the owner changes. Evaluate the
+test('recognizes the pilot repository before and after the rename', () => {
+  // The repository was renamed out of band, so the workflow must keep
+  // summarizing pull requests both before and after the rename. Evaluate the
   // declared predicate against both repository names.
   const conditions = declaredBotConditions();
 
-  for (const owner of ['simpsonm09-org', 'simpsonm09-projects']) {
+  for (const repository of PILOT_REPOSITORIES) {
     const github = {
-      repository: `${owner}/simpsonm09-repo-template`,
+      repository,
       event: { pull_request: { user: { login: 'dependabot[bot]' } } },
     };
     for (const condition of conditions) {
-      assert.ok(matchesConjunct(github, condition), `${owner}: ${condition}`);
+      assert.ok(matchesConjunct(github, condition), `${repository}: ${condition}`);
     }
   }
 
   const unrelated = {
-    repository: 'someone-else/simpsonm09-repo-template',
+    repository: 'someone-else/repo-template',
     event: { pull_request: { user: { login: 'dependabot[bot]' } } },
   };
   assert.ok(
@@ -234,8 +235,8 @@ test('workflow keeps the read-only, checkout-free contract', () => {
   assert.deepEqual(uses, ['dependabot/fetch-metadata@25dd0e34f4fe68f24cc83900b1fe3fe149efef98']);
   // The action treats any non-empty value, including "false", as enabled.
   assert.doesNotMatch(WORKFLOW, /^ {10}(alert-lookup|compat-lookup):/m);
-  for (const owner of ['simpsonm09-org', 'simpsonm09-projects']) {
-    assert.match(WORKFLOW, new RegExp(`github\\.repository == '${owner}/simpsonm09-repo-template'`));
+  for (const repository of PILOT_REPOSITORIES) {
+    assert.match(WORKFLOW, new RegExp(`github\\.repository == '${repository}'`));
   }
   assert.match(WORKFLOW, /github\.event\.pull_request\.user\.login == 'dependabot\[bot\]'/);
   // Coverage is by pull request author, not by webhook sender: a maintainer

@@ -1,4 +1,4 @@
-# simpsonm09-repo-template
+# repo-template
 
 A layered Kotlin service on Java 25 and Spring Boot 4, wired to the shared `repo-standard`. It
 ships one feature, item CRUD over HTTP, as a worked example of the fleet's layering and tooling.
